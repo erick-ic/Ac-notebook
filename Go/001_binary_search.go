@@ -1,6 +1,6 @@
 // Difficulty: Easy
 // Status: Done
-// Notes: 二分查找
+// Notes: 二分查找(704)
 package main
 
 import "fmt"

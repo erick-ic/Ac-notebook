@@ -2,8 +2,8 @@
 
 <!-- start -->
 
-| #   | Title         | Difficulty | Language | Status | Notes    |
-| --- | ------------- | ---------- | -------- | ------ | -------- |
-| 001 | Binary Search | Easy       | Go       | Done   | 二分查找 |
+| #   | Title         | Difficulty | Language | Status | Notes         |
+| --- | ------------- | ---------- | -------- | ------ | ------------- |
+| 001 | Binary Search | Easy       | Go       | Done   | 二分查找(704) |
 
 <!-- end -->
