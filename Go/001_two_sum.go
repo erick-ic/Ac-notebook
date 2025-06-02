@@ -1,3 +1,6 @@
+// Difficulty: Easy
+// Status: Done
+// Notes: 哈希表
 package Go
 
 import "fmt"

@@ -1,18 +1,23 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
 )
 
 type Problem struct {
-	Number string
-	Title  string
-	File   string
+	Number     string
+	Title      string
+	Difficulty string
+	Status     string
+	Notes      string
+	File       string
 }
 
 func formatTitle(title string) string {
@@ -21,6 +26,38 @@ func formatTitle(title string) string {
 		words[i] = strings.Title(words[i])
 	}
 	return strings.Join(words, " ")
+}
+
+func parseFileAnnotations(path string) (difficulty, status, notes string) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "-", "-", "-"
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for i := 0; i < 10 && scanner.Scan(); i++ { // 只扫描文件头10行
+		line := scanner.Text()
+		if strings.HasPrefix(line, "// Difficulty:") {
+			difficulty = strings.TrimSpace(strings.TrimPrefix(line, "// Difficulty:"))
+		} else if strings.HasPrefix(line, "// Status:") {
+			status = strings.TrimSpace(strings.TrimPrefix(line, "// Status:"))
+		} else if strings.HasPrefix(line, "// Notes:") {
+			notes = strings.TrimSpace(strings.TrimPrefix(line, "// Notes:"))
+		}
+	}
+
+	if difficulty == "" {
+		difficulty = "-"
+	}
+	if status == "" {
+		status = "-"
+	}
+	if notes == "" {
+		notes = "-"
+	}
+
+	return
 }
 
 func main() {
@@ -42,10 +79,17 @@ func main() {
 			number := match[1]
 			rawTitle := match[2]
 			title := formatTitle(rawTitle)
+
+			filePath := filepath.Join(dir, file.Name())
+			difficulty, status, notes := parseFileAnnotations(filePath)
+
 			problems = append(problems, Problem{
-				Number: number,
-				Title:  title,
-				File:   file.Name(),
+				Number:     number,
+				Title:      title,
+				Difficulty: difficulty,
+				Status:     status,
+				Notes:      notes,
+				File:       file.Name(),
 			})
 		}
 	}
@@ -56,9 +100,9 @@ func main() {
 
 	table := "| # | Title | Difficulty | Language | Status | Notes |\n"
 	table += "|---|-------|------------|----------|--------|-------|\n"
-
 	for _, p := range problems {
-		table += fmt.Sprintf("| %s | %s | - | Go |  |  |\n", p.Number, p.Title)
+		table += fmt.Sprintf("| %s | %s | %s | Go | %s | %s |\n",
+			p.Number, p.Title, p.Difficulty, p.Status, p.Notes)
 	}
 
 	updateReadme("README.md", table)
